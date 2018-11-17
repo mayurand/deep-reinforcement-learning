@@ -1,3 +1,10 @@
+
+p1_navigation/Banana_Linux
+.metadata/
+RemoteSystemsTempFiles/
+fake-taxi/
+lab-taxi/.idea/
+
 # Mac OS
 .DS_Store
 
