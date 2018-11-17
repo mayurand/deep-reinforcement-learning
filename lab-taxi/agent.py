@@ -12,6 +12,10 @@ class Agent:
         """
         self.nA = nA
         self.Q = defaultdict(lambda: np.zeros(self.nA))
+        self.eps = 1.0
+        self.alpha = 0.05
+        self.gamma = 1.0
+        self.episode_number = 1
 
     def select_action(self, state):
         """ Given the state, select an action.
@@ -24,7 +28,10 @@ class Agent:
         =======
         - action: an integer, compatible with the task's action space
         """
-        return np.random.choice(self.nA)
+        if np.random.random()<(1-self.eps):
+            return np.argmax(self.Q[state])
+        else:
+            return np.random.choice(self.nA)
 
     def step(self, state, action, reward, next_state, done):
         """ Update the agent's knowledge, using the most recently sampled tuple.
@@ -37,4 +44,12 @@ class Agent:
         - next_state: the current state of the environment
         - done: whether the episode is complete (True or False)
         """
-        self.Q[state][action] += 1
+        if not done:
+            target = self.gamma*np.max(self.Q[next_state]) - self.Q[state][action]
+            self.Q[state][action] += self.alpha*(reward + target)
+
+        else:
+            target = self.gamma * 0 - self.Q[state][action]
+            self.Q[state][action] += self.alpha * (reward + target)
+            self.episode_number += 1
+            self.eps = max(self.eps/self.episode_number,0.05)
